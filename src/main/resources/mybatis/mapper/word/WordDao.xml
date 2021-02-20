@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.quickstudy.api.admin.dao.word.WordDao">
+
+    <select id="wordList" parameterType="com.quickstudy.api.admin.domain.request.word.WordQueryRequest" resultType="com.quickstudy.api.admin.entity.word.Word">
+                SELECT l.*,t.type_name,IFNULL(s.score,5) as score  ,s.user_id,s.view_count FROM `word_list` as l
+                JOIN `word_type` as t on l.type = t.id
+                LEFT JOIN (SELECT * FROM word_score WHERE user_id = #{adminId} ) AS s ON l.id = s.word_id
+                where l.`status` = 1  AND (s.`status` = 1 OR s.`status` IS NULL )
+                AND (s.user_id =  #{adminId} OR  s.user_id IS NULL )
+
+            <if test="word != null and word != ''">
+               AND l.`en` like "%${word}%"
+            </if>
+
+
+            <if test="type != null and type != 0">
+                AND l.type = #{type}
+            </if>
+
+
+<!--        <if test="orderProp != null and orderProp != ''">-->
+<!--            ${orderProp}-->
+<!--        </if>-->
+
+
+<!--        <if test="orderType != null and orderType != ''">-->
+<!--            ${orderType}-->
+<!--        </if>-->
+
+
+    </select>
+
+
+    <select id="listWordType" resultType="com.quickstudy.api.admin.entity.word.WordType">
+        SELECT * FROM word_type where status = 1
+    </select>
+
+
+    <select id="findWordById" parameterType="com.quickstudy.api.admin.domain.request.word.WordQueryRequest" resultType="com.quickstudy.api.admin.entity.word.Word">
+        SELECT l.*,t.type_name,s.score,s.user_id,s.view_count FROM `word_list` as l JOIN `word_type` as t
+        JOIN word_score as s on l.id = s.word_id
+        AND l.type = t.id
+        where l.`status` = 1 AND s.`user_id` =  #{adminId}
+        AND L.`id` =  #{id}
+    </select>
+
+    <update id="setY" parameterType="com.quickstudy.api.admin.domain.request.word.WordQueryRequest"  >
+        UPDATE `word_score`
+        SET score = score - 1
+        WHERE user_id=#{adminId} AND word_id = #{id}
+    </update>
+    <update id="setN" parameterType="com.quickstudy.api.admin.domain.request.word.WordQueryRequest"  >
+        UPDATE `word_score`
+        SET score = score + 1
+        WHERE user_id=#{adminId} AND word_id = #{id}
+    </update>
+
+
+    <update id="setV" parameterType="com.quickstudy.api.admin.domain.request.word.WordQueryRequest"  >
+        UPDATE `word_score`
+        SET view_count = view_count + 1
+        WHERE user_id=#{adminId} AND word_id = #{id}
+    </update>
+
+
+    <update id="setD" parameterType="com.quickstudy.api.admin.domain.request.word.WordQueryRequest"  >
+        UPDATE `word_score`
+        SET status = 0
+        WHERE user_id=#{adminId} AND word_id = #{id}
+    </update>
+
+
+    <insert id="setInitialScore" parameterType="com.quickstudy.api.admin.domain.request.word.WordQueryRequest">
+        INSERT INTO `word_score`( `user_id`, `word_id`, `score`, `view_count`, `status`)
+         VALUES ( #{adminId} , #{id}, 5, 0, 1);
+    </insert>
+
+
+
+
+    <update id="updateWord" parameterType="com.quickstudy.api.admin.domain.request.word.WordDataRequest"  >
+        UPDATE `word_list`
+        SET cn = #{cn} , en = #{en}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
