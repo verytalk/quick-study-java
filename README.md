@@ -3,7 +3,7 @@
 > 运行方法
 
 
-- 创建数据库并导入文件夹下SQL
+- 创建数据库并导入sql文件夹下SQL
 - 修改配置文件 src/main/resources/application-test.properties
 - mvn clean install
 - java -jar target/quick-study-java.jar
