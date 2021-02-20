@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,8 +16,8 @@ import org.springframework.stereotype.Component;
 /**
  * 缓存操作类
  */
-@SuppressWarnings("ALL")
 @Component
+@Slf4j
 public class CacheUtils {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -45,7 +46,7 @@ public class CacheUtils {
      */
     public static void set(String key, String value) {
 
-        if(CacheUtils.openRedis==true){
+        if(CacheUtils.openRedis){
             cacheUtils.redisTemplate.opsForValue().set(key, value);
         }
 
@@ -58,7 +59,7 @@ public class CacheUtils {
      * @param timeout
      */
     public static void set(String key, String value, Long timeout) {
-        if(CacheUtils.openRedis==true){
+        if(CacheUtils.openRedis){
             cacheUtils.redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS);
         }
     }
@@ -70,7 +71,7 @@ public class CacheUtils {
      */
     public static Object get(String key) {
 
-        if(CacheUtils.openRedis==false){
+        if(!CacheUtils.openRedis){
             return new HashSet<String>();
         }
 
@@ -83,12 +84,12 @@ public class CacheUtils {
      * @param ttl 过期秒数
      */
     public static boolean expire(String key, Long ttl) {
-        if(CacheUtils.openRedis==false){
-
+        if(!CacheUtils.openRedis){
             return false;
         }
 
         return cacheUtils.redisTemplate.expire(key, ttl, TimeUnit.SECONDS);
+
     }
 
     /**
@@ -96,16 +97,11 @@ public class CacheUtils {
      * @param key 键值
      */
     public static boolean hasKey(String key) {
-
-        System.out.println(key);
-        System.out.println(CacheUtils.openRedis);
-
-        if(CacheUtils.openRedis==false){
-            System.out.println(CacheUtils.openRedis);
-
+        log.info(key);
+        log.info("openRedis : {}",CacheUtils.openRedis);
+        if(!CacheUtils.openRedis){
             return false;
         }
-
         return cacheUtils.redisTemplate.hasKey(key);
     }
 
@@ -116,7 +112,7 @@ public class CacheUtils {
      * @return 返回值为设置成功的value数
      */
     public static Long sAdd(String key, String... value) {
-        if(CacheUtils.openRedis==false){
+        if(!CacheUtils.openRedis){
             return 0L;
         }
 
@@ -130,7 +126,7 @@ public class CacheUtils {
      */
     public static Set<String> sGetMembers(String key) {
 
-        if(CacheUtils.openRedis==false){
+        if(!CacheUtils.openRedis){
             return new HashSet<String>();
         }
 

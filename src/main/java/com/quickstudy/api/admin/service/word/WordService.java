@@ -69,11 +69,15 @@ public interface WordService {
      * say
      * @param en
      * @param response
-     * @throws IOException
      */
     void say(String en,HttpServletResponse response) throws IOException;
 
 
+    /**
+     * updateWord
+     * @param wordQueryRequest WordDataRequest
+     * @return int
+     */
     int updateWord(WordDataRequest wordQueryRequest);
 
 }

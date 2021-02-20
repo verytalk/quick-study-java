@@ -16,7 +16,9 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("ALL")
+/**
+ * @author Jason
+ */
 @Service
 @Slf4j
 public class AuthLoginServiceImpl implements AuthLoginService {

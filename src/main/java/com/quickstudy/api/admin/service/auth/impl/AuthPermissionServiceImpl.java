@@ -9,7 +9,6 @@ import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("ALL")
 @Service
 public class AuthPermissionServiceImpl implements AuthPermissionService {
 

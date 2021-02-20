@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 /**
  * 角色相关
  */
-@SuppressWarnings("ALL")
 @RestController
 public class AuthRoleController {
 

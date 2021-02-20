@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 
 /**
  * 管理员相关
+ * @author Jason
  */
-@SuppressWarnings("ALL")
 @RestController
 public class WordController {
 
@@ -41,10 +41,6 @@ public class WordController {
     @PostMapping("/admin/word/wordlist")
     public BaseResponse index(@Valid WordQueryRequest wordQueryRequest,
                               BindingResult bindingResult) {
-
-        System.out.println("word list ...");
-        System.out.println(wordQueryRequest);
-        System.out.println("word list ...  ----");
 
         if (bindingResult.hasErrors()) {
             return ResultVOUtils.error(ResultEnum.PARAM_VERIFY_FALL, bindingResult.getFieldError().getDefaultMessage());
@@ -146,21 +142,12 @@ public class WordController {
 
         int status = wordService.updateWord(wordDataRequest);
         String returnStatus = "error";
-
-        System.out.println(status);
-        System.out.println(status);
-        System.out.println(status);
-        System.out.println(status);
         if(status == 1 ){
             returnStatus = "success";
 
         }
         return ResultVOUtils.success(returnStatus);
     }
-
-
-
-
 
     @GetMapping("/say")
     public void say(@RequestParam String en, HttpServletResponse response) throws IOException {

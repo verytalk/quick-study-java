@@ -18,10 +18,7 @@ public class HelloController {
     private AuthAdminService authAdminService;
 
     @GetMapping("/hello")
-    public BaseResponse hello(
-            @RequestParam(value = "offset") Integer offset
-            , @RequestParam("offset") Integer limit
-    ) {
+    public BaseResponse hello(@RequestParam(value = "offset") Integer offset, @RequestParam("offset") Integer limit) {
         return ResultVOUtils.error(1, "test");
     }
 

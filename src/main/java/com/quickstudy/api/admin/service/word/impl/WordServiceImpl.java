@@ -9,6 +9,7 @@ import com.quickstudy.api.admin.domain.request.word.WordDataRequest;
 import com.quickstudy.api.admin.domain.request.word.WordQueryRequest;
 import com.quickstudy.api.admin.service.word.WordService;
 import com.quickstudy.api.admin.common.enums.ResultEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -32,24 +33,30 @@ import java.net.URLConnection;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("ALL")
+/**
+ * @author Jason
+ */
 @Service
+@Slf4j
 public class WordServiceImpl implements WordService {
-
 
     @Resource
     private WordDao wordDao;
 
-
-
     private int getAdminId(){
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
+        HttpServletRequest request = null;
+        if (attributes != null) {
+            request = attributes.getRequest();
+        }
 
-        String id = request.getHeader("X-Adminid");
-        Integer adminId;
+        String id = "";
+        if (request != null) {
+            id = request.getHeader("X-Adminid");
+        }
+        int adminId;
         try {
-            adminId = Integer.valueOf(id);
+            adminId = Integer.parseInt(id);
         }catch (Exception e) {
             throw new JsonException(ResultEnum.LOGIN_VERIFY_FALL);
         }
@@ -60,7 +67,7 @@ public class WordServiceImpl implements WordService {
     @Override
     public List<Word> listWordPage(WordQueryRequest wordQueryRequest) {
 
-        System.out.println("wordQueryRequest listWordPage - :"+ wordQueryRequest);
+        log.info("wordQueryRequest listWordPage - : {}", wordQueryRequest);
         if (wordQueryRequest == null) {
             return Collections.emptyList();
         }
@@ -68,7 +75,7 @@ public class WordServiceImpl implements WordService {
         wordQueryRequest.setAdminId(getAdminId());
         int offset = (wordQueryRequest.getPage() - 1) * wordQueryRequest.getLimit();
 
-        System.out.println("wordQueryRequest listWordPage - :"+ wordQueryRequest);
+        log.info("wordQueryRequest listWordPage - : {}", wordQueryRequest);
         PageHelper.offsetPage(offset, wordQueryRequest.getLimit());
 
         if(wordQueryRequest.getOrderProp() != null && wordQueryRequest.getOrderProp() != ""){
@@ -79,16 +86,14 @@ public class WordServiceImpl implements WordService {
 
         }
 
-        System.out.println("wordQueryRequest listWordPage :"+ wordQueryRequest);
-        List<Word>  wordList = wordDao.wordList(wordQueryRequest);
+        log.info("wordQueryRequest listWordPage :{} ", wordQueryRequest);
 
-        return wordList;
+        return wordDao.wordList(wordQueryRequest);
     }
 
     @Override
     public List<WordType> listWordType() {
-
-        return  wordDao.listWordType();
+        return wordDao.listWordType();
     }
 
     @Override
@@ -102,10 +107,10 @@ public class WordServiceImpl implements WordService {
         wordQueryRequest.setAdminId(getAdminId());
         wordQueryRequest.setId(id);
         Word word = findWordById(wordQueryRequest);
-        int status = 0;
+        int status ;
         if(word !=  null){
             status =  wordDao.setY(wordQueryRequest);
-            System.out.println("update status: "+status);
+            log.info("update status: {}",status);
         }else{
             wordDao.setInitialScore(wordQueryRequest);
             status =  wordDao.setY(wordQueryRequest);
@@ -115,16 +120,14 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public int setN(int id) {
-
-
         WordQueryRequest wordQueryRequest = new WordQueryRequest();
         wordQueryRequest.setAdminId(getAdminId());
         wordQueryRequest.setId(id);
         Word word = findWordById(wordQueryRequest);
-        int status = 0;
-        if(word !=  null){
+        int status ;
+        if(word != null){
             status =  wordDao.setN(wordQueryRequest);
-            System.out.println("update status: "+status);
+            log.info("update status: "+status);
         }else{
             wordDao.setInitialScore(wordQueryRequest);
             status =  wordDao.setN(wordQueryRequest);
@@ -142,7 +145,7 @@ public class WordServiceImpl implements WordService {
         int status = 0;
         if(word !=  null){
             status =  wordDao.setD(wordQueryRequest);
-            System.out.println("update status: "+status);
+            log.info("update status: "+status);
         }else{
             wordDao.setInitialScore(wordQueryRequest);
             status =  wordDao.setD(wordQueryRequest);
@@ -161,7 +164,7 @@ public class WordServiceImpl implements WordService {
         int status = 0;
         if(word !=  null){
             status =  wordDao.setV(wordQueryRequest);
-            System.out.println("update status: "+status);
+            log.info("update status: "+status);
         }else{
             wordDao.setInitialScore(wordQueryRequest);
             status =  wordDao.setV(wordQueryRequest);
@@ -208,32 +211,35 @@ public class WordServiceImpl implements WordService {
     @Override
     public void say(String en, HttpServletResponse response) throws IOException {
 
-
-        String urlString="https://fanyi.baidu.com/gettts?lan=en&text="+en+"&spd=3&source=webhidden";;
+        String urlString="https://fanyi.baidu.com/gettts?lan=en&text="+en+"&spd=3&source=webhidden";
         URL url = null;
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        URLConnection connection = url.openConnection();
-        InputStream inputStream = connection.getInputStream();
-        BufferedOutputStream outputStream = null;
+        URLConnection connection = null;
+        if (url != null) {
+            connection = url.openConnection();
+        }
+        InputStream inputStream = null;
+        if (connection != null) {
+            inputStream = connection.getInputStream();
+        }
+        BufferedOutputStream outputStream;
         try {
             outputStream = new BufferedOutputStream(response.getOutputStream());
             byte[] buff = new byte[4096];
-            int len = 0;
-            while((len = inputStream.read(buff)) != -1) {
-                outputStream.write(buff,0, len);
+            int len;
+            if (inputStream != null) {
+                while((len = inputStream.read(buff)) != -1) {
+                    outputStream.write(buff,0, len);
+                }
             }
             outputStream.flush();
             response.flushBuffer();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-
         }
 
     }

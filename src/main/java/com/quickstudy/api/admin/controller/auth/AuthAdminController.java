@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 /**
  * 管理员相关
  */
-@SuppressWarnings("ALL")
 @RestController
 public class AuthAdminController {
 

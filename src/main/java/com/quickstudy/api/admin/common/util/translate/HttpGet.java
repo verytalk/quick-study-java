@@ -1,5 +1,7 @@
 package com.quickstudy.api.admin.common.util.translate;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -15,8 +17,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
+@Slf4j
 class HttpGet {
-    protected static final int SOCKET_TIMEOUT = 10000; // 10S
+    // 10S
+    protected static final int SOCKET_TIMEOUT = 10000;
     protected static final String GET = "GET";
 
     public static String get(String host, Map<String, String> params) {
@@ -37,7 +41,7 @@ class HttpGet {
             conn.setRequestMethod(GET);
             int statusCode = conn.getResponseCode();
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                System.out.println("Http错误码：" + statusCode);
+                log.info("Http错误码：{}" , statusCode);
             }
 
             // 读取服务器的数据

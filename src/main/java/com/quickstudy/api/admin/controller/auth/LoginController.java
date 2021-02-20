@@ -29,8 +29,8 @@ import java.util.*;
 
 /**
  * 登录相关
+ * @author Jason
  */
-@SuppressWarnings("ALL")
 @RestController
 @Slf4j
 public class LoginController {
@@ -43,14 +43,14 @@ public class LoginController {
 
     /**
      * 用户登录
-     * @return
+     * @return BaseResponse
      */
     @PostMapping(value = "/admin/auth/login/index")
     public BaseResponse index(@RequestBody @Valid LoginRequest loginRequest,
                               BindingResult bindingResult,
                               HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            return ResultVOUtils.error(ResultEnum.PARAM_VERIFY_FALL, bindingResult.getFieldError().getDefaultMessage());
+            return ResultVOUtils.error(ResultEnum.PARAM_VERIFY_FALL, Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage());
         }
 
         AuthAdmin authAdmin = authAdminService.findByUserName(loginRequest.getUserName());
@@ -74,8 +74,8 @@ public class LoginController {
 
         Map<String, Object> claims = new HashMap<>(16);
         claims.put("admin_id", authAdmin.getId());
-        String token = JwtUtils.createToken(claims, 86400L); // 一天后过期
-
+        // 一天后过期
+        String token = JwtUtils.createToken(claims, 86400L);
         Map<String, Object> map = new HashMap<>(16);
         map.put("id", authAdmin.getId());
         map.put("token", token);

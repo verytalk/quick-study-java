@@ -14,8 +14,8 @@ import java.util.List;
 
 /**
  *
+ * @author Jason
  */
-@SuppressWarnings("ALL")
 @Service
 public class AuthPermissionRuleServiceImpl implements AuthPermissionRuleService {
 

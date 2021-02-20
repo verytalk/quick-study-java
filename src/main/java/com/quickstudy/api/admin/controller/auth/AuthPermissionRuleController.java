@@ -22,7 +22,6 @@ import java.util.Map;
 /**
  * 权限规则相关
  */
-@SuppressWarnings("ALL")
 @RestController
 public class AuthPermissionRuleController {
 
